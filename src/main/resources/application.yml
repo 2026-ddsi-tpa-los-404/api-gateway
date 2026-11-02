@@ -1,0 +1,65 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # Los servicios de Render (plan free) tardan en despertar: se espera bastante antes de cortar.
+          httpclient:
+            connect-timeout: 30000
+            response-timeout: 120s
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
+          # Cada módulo vive bajo /api/<modulo>. El prefijo se quita antes de reenviar, así
+          # /api/donaciones/donaciones/5 llega al módulo como /donaciones/5.
+          # El prefijo es necesario porque hay paths repetidos entre módulos (/donadores, /admin).
+          routes:
+            - id: donaciones
+              uri: ${DONACIONES_URL:https://marco-maggio-springboot-api-entrega2-dsi.onrender.com}
+              predicates:
+                - Path=/api/donaciones/**
+              filters:
+                - StripPrefix=2
+            - id: logistica
+              uri: ${LOGISTICA_URL:https://logistica-v3xw.onrender.com}
+              predicates:
+                - Path=/api/logistica/**
+              filters:
+                - StripPrefix=2
+            - id: donadores-entidades
+              uri: ${DONADORES_ENTIDADES_URL:https://donadores-y-entidades-0uv4.onrender.com}
+              predicates:
+                - Path=/api/donadores-entidades/**
+              filters:
+                - StripPrefix=2
+            - id: incentivos
+              uri: ${INCENTIVOS_URL:https://incentivos-nhyc.onrender.com}
+              predicates:
+                - Path=/api/incentivos/**
+              filters:
+                - StripPrefix=2
+            - id: consultas
+              uri: ${CONSULTAS_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/consultas/**
+              filters:
+                - StripPrefix=2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      access: read-only

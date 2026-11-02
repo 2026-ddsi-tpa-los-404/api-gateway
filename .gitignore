@@ -1,0 +1,8 @@
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+# Configuración local con credenciales: no se sube
+application-local.properties
+.env
