@@ -6,6 +6,8 @@ ni base de datos: solo enruta.
 
 Implementado con Spring Cloud Gateway (WebFlux). Las rutas están en `src/main/resources/application.yml`.
 
+Despliegue: https://api-gateway-bti9.onrender.com
+
 ## Rutas
 
 Cada módulo vive bajo `/api/<modulo>`. El gateway quita ese prefijo antes de reenviar, así que del lado del
